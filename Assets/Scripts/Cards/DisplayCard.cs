@@ -6,8 +6,7 @@ using UnityEngine.UI;
 
 public class DisplayCard : MonoBehaviour, IPointerClickHandler
 {
-    public List<Card> DisplayCards = new List<Card>();
-    public int DisplayId;
+    private Card PlayerCard;
 
     public int CardId;
     public int CardPower;
@@ -17,29 +16,58 @@ public class DisplayCard : MonoBehaviour, IPointerClickHandler
 
     public Image CardImage;
 
-    void Start()
+    public DisplayCard(int cardId, Vector3 position)
     {
-        DisplayCards.Clear();
-        DisplayCards.Add(CardDatabase.CardsList[DisplayId]);
+        PlayerCard = CardDatabase.CardsList[cardId];
+
+        CardId = PlayerCard.Id;
+        CardPower = PlayerCard.Power;
+        CardElement = PlayerCard.Element;
+        CardColor = PlayerCard.Color;
+        CardSpriteImage = PlayerCard.SpriteImage;
+
+        CardImage.sprite = CardSpriteImage;
+
+        this.transform.position = position;
     }
 
     void Update()
     {
-        CardId = DisplayCards[0].Id;
-        CardPower = DisplayCards[0].Power;
-        CardElement = DisplayCards[0].Element;
-        CardColor = DisplayCards[0].Color;
-        CardSpriteImage = DisplayCards[0].SpriteImage;
+        if (PlayerCard != null)
+        {
+            CardId = PlayerCard.Id;
+            CardPower = PlayerCard.Power;
+            CardElement = PlayerCard.Element;
+            CardColor = PlayerCard.Color;
+            CardSpriteImage = PlayerCard.SpriteImage;
 
-        CardImage.sprite = CardSpriteImage;
+            CardImage.sprite = CardSpriteImage;
+        }
     }
 
     public void OnPointerClick(PointerEventData pointerEventData)
     {
-        if (DisplayCards[0].IsSelected == false)
+        if (PlayerCard.IsSelected == false)
         {
-            DisplayCards[0].IsSelected = true;
+            PlayerCard.IsSelected = true;
             this.transform.position += Vector3.up * 20f;
         }
+    }
+
+    public void SetDisplayCard(int cardId, Vector3 position)
+    {
+        print("Render card " + cardId + " at position " + position);
+        PlayerCard = CardDatabase.CardsList[cardId];
+
+        CardId = PlayerCard.Id;
+        CardPower = PlayerCard.Power;
+        CardElement = PlayerCard.Element;
+        CardColor = PlayerCard.Color;
+        CardSpriteImage = PlayerCard.SpriteImage;
+
+        CardImage.sprite = CardSpriteImage;
+
+        this.transform.position = position;
+        //print("Power: " + CardPower + "; Element: " + CardElement + "; Color: " + CardColor + "; SpriteImage: " + CardSpriteImage);
     }
 }
