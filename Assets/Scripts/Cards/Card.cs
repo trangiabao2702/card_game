@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 [System.Serializable]
 
 public class Card
@@ -10,6 +11,7 @@ public class Card
     public string Element;
     public string Color;
     public Sprite SpriteImage;
+    public bool IsSelected;
 
     public Card() { }
 
@@ -20,5 +22,6 @@ public class Card
         Color = color;
         Power = power;
         SpriteImage = spriteImage;
+        IsSelected = false;
     }
 }
