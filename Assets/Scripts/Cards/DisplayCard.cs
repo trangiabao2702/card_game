@@ -13,6 +13,7 @@ public class DisplayCard : MonoBehaviour, IPointerClickHandler
     public string CardElement;
     public string CardColor;
     public Sprite CardSpriteImage;
+    public bool IsSelected = false;
 
     public Image CardImage;
 
@@ -31,32 +32,33 @@ public class DisplayCard : MonoBehaviour, IPointerClickHandler
         this.transform.position = position;
     }
 
-    void Update()
-    {
-        if (PlayerCard != null)
-        {
-            CardId = PlayerCard.Id;
-            CardPower = PlayerCard.Power;
-            CardElement = PlayerCard.Element;
-            CardColor = PlayerCard.Color;
-            CardSpriteImage = PlayerCard.SpriteImage;
+    //void Update()
+    //{
+    //    if (PlayerCard != null)
+    //    {
+    //        CardId = PlayerCard.Id;
+    //        CardPower = PlayerCard.Power;
+    //        CardElement = PlayerCard.Element;
+    //        CardColor = PlayerCard.Color;
+    //        CardSpriteImage = PlayerCard.SpriteImage;
 
-            CardImage.sprite = CardSpriteImage;
-        }
-    }
+    //        CardImage.sprite = CardSpriteImage;
+    //    }
+    //}
 
     public void OnPointerClick(PointerEventData pointerEventData)
     {
-        if (PlayerCard.IsSelected == false)
+        if (IsSelected == false)
         {
-            PlayerCard.IsSelected = true;
+            DeselectOldSelectedCard();
+
+            IsSelected = true;
             this.transform.position += Vector3.up * 20f;
         }
     }
 
     public void SetDisplayCard(int cardId, Vector3 position)
     {
-        print("Render card " + cardId + " at position " + position);
         PlayerCard = CardDatabase.CardsList[cardId];
 
         CardId = PlayerCard.Id;
@@ -68,6 +70,19 @@ public class DisplayCard : MonoBehaviour, IPointerClickHandler
         CardImage.sprite = CardSpriteImage;
 
         this.transform.position = position;
-        //print("Power: " + CardPower + "; Element: " + CardElement + "; Color: " + CardColor + "; SpriteImage: " + CardSpriteImage);
+    }
+
+    private void DeselectOldSelectedCard()
+    {
+        GameObject[] playerOnHandCards = GameObject.FindGameObjectsWithTag("PlayerCard");
+        foreach (GameObject card in playerOnHandCards)
+        {
+            if (card.GetComponent<DisplayCard>().IsSelected)
+            {
+                card.GetComponent<DisplayCard>().IsSelected = false;
+                card.GetComponent<DisplayCard>().transform.position -= Vector3.up * 20f;
+                return;
+            }
+        }
     }
 }

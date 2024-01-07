@@ -25,19 +25,61 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    List<int> GetPlayerDeck()
+    {
+        // TODO: get the exact deck of player
+        return new List<int> { 0, 1, 2, 3, 4, 20, 21, 22, 23, 24, 40, 41, 42, 43, 44 };
+    }
+    
+    List<int> GetOpponentDeck()
+    {
+        List<int> opponentDeck =  new List<int> { 0, 1, 2, 3, 4, 20, 21, 22, 23, 24, 40, 41, 42, 43, 44 };
+
+        int n = opponentDeck.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = Random.Range(0, n + 1);
+            int value = opponentDeck[k];
+            opponentDeck[k] = opponentDeck[n];
+            opponentDeck[n] = value;
+        }
+
+        return opponentDeck;
+    }
+
     private void StartTurn()
     {
-        print("Start Turn");
-
-        // Draw cards to hand
+        // Draw player's cards to hand
         DrawCardsToHand();
 
         // Start count down
         CountDownTimer.StartTimer(10.1f);
 
-        // Allow players to select cards or perform any other turn-specific actions
-        // You can enable card selection logic here
-        // For example, enable card selection by enabling colliders or interaction scripts on the cards
+        // Get players' selected card
+        Card playerCard = GetPlayerSelectedCard();
+
+        // Get opponent's selected card
+        Card opponentCard = GetOpponentSelectedCard(GetOpponentDeck());
+
+        // Compare cards and show the winner
+        if (IsPlayerDraw(playerCard, opponentCard))
+        {
+            // Show player drawed
+        }
+        else if (IsPlayerWin(playerCard, opponentCard))
+        {
+            // Show player won & add signal
+
+        }
+        else
+        {
+            // Show opponent won & add signal
+
+        }
+
+        // End turn
+        EndTurn();
     }
 
     private void DrawCardsToHand()
@@ -80,17 +122,94 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private Card GetPlayerSelectedCard()
+    {
+        int selectedCard = -1;
+
+        GameObject[] playerOnHandCards = GameObject.FindGameObjectsWithTag("PlayerCard");
+        foreach (GameObject card in playerOnHandCards)
+        {
+            if (card.GetComponent<DisplayCard>().IsSelected)
+            {
+
+            }
+        }
+        return null;
+    }
+
+    private static Card GetOpponentSelectedCard(List<int> opponentDeck)
+    {
+        Card opponentCard = CardDatabase.CardsList[opponentDeck[0]];
+        opponentDeck.RemoveAt(0);
+
+        return opponentCard;
+    }
+
+    private bool IsPlayerDraw(Card playerCard, Card opponentCard)
+    {
+        return playerCard.Id == opponentCard.Id;
+    }
+
+    private bool IsPlayerWin(Card playerCard, Card opponentCard) 
+    {
+        switch (CompareElements(playerCard.Element, opponentCard.Element))
+        {
+            case 1:
+                return true;
+            case -1:
+                return false;
+            case 0:
+                return playerCard.Power > opponentCard.Power;
+            default:
+                return false;
+        }
+    }
+
+    private int CompareElements(string first_element, string second_element)
+    {
+        // Same elements
+        if (first_element == second_element)
+        {
+            return 0;
+        }
+        
+        // Weaker element
+        if (first_element == "fire" && second_element == "water")
+        {
+            return -1;
+        }
+        
+        if (first_element == "water" && second_element == "wood")
+        {
+            return -1;
+        }
+        
+        if (first_element == "wood" && second_element == "fire")
+        {
+            return -1;
+        }
+
+        // Stronger element
+        if (first_element == "fire" && second_element == "wood")
+        {
+            return 1;
+        }
+
+        if (first_element == "water" && second_element == "fire")
+        {
+            return 1;
+        }
+
+        if (first_element == "wood" && second_element == "water")
+        {
+            return 1;
+        }
+
+        return 2;
+    }
+
     private void EndTurn()
     {
-        print("End Turn");
-
-        // Disable card selection logic here
-        // For example, disable colliders or interaction scripts on the cards
-
-        // Compare selected cards and determine the winner for this turn
-
-        // Show the winner on the UI or perform any necessary actions
-
         // Check game end conditions
         bool isGameOver = CheckGameOverCondition();
 
@@ -100,7 +219,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            // Start the next turn
+            // Continue with a new turn
             StartTurn();
         }
     }
@@ -110,10 +229,5 @@ public class GameManager : MonoBehaviour
         // Implement your game end condition logic here
         // Return true if the game should end, false otherwise
         return false;
-    }
-
-    List<int> GetPlayerDeck()
-    {
-        return new List<int> { 0, 1, 2, 3, 4, 20, 21, 22, 23, 24, 40, 41, 42, 43, 44 };
     }
 }
