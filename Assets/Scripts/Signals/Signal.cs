@@ -3,22 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 [System.Serializable]
 
-public class Card
+public class Signal
 {
     public int Id;
-    public int Power;
     public string Element;
     public string Color;
     public Sprite SpriteImage;
 
-    public Card() { }
+    public Signal() { }
 
-    public Card(int id, string element, string color, int power, Sprite spriteImage)
+    public Signal(int id, string element, string color, Sprite spriteImage)
     {
         Id = id;
         Element = element;
         Color = color;
-        Power = power;
         SpriteImage = spriteImage;
     }
 }
