@@ -11,12 +11,11 @@ public class Timer : MonoBehaviour
     [SerializeField] private Image uiFill;
     [SerializeField] private TextMeshProUGUI uiText;
     [SerializeField] public float remainingDuration;
-    private bool isRunning = false;
+    private bool isRunning = true;
 
     public void StartTimer(float duration)
     {
         print("Start Timer");
-        isRunning = true;
 
         Duration = duration;
         remainingDuration = duration;
@@ -47,5 +46,17 @@ public class Timer : MonoBehaviour
     {
         print("End Timer");
         isRunning = false;
+    }
+
+    public void PauseTimer()
+    {
+        print("Pause Timer");
+        isRunning = false;
+    }
+
+    public void ResumeTimer()
+    {
+        print("Resume Timer");
+        isRunning = true;
     }
 }
