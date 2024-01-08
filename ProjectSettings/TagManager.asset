@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - PlayerCard
+  - OpponentCard
   layers:
   - Default
   - TransparentFX

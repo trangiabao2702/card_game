@@ -32,20 +32,6 @@ public class DisplayCard : MonoBehaviour, IPointerClickHandler
         this.transform.position = position;
     }
 
-    //void Update()
-    //{
-    //    if (PlayerCard != null)
-    //    {
-    //        CardId = PlayerCard.Id;
-    //        CardPower = PlayerCard.Power;
-    //        CardElement = PlayerCard.Element;
-    //        CardColor = PlayerCard.Color;
-    //        CardSpriteImage = PlayerCard.SpriteImage;
-
-    //        CardImage.sprite = CardSpriteImage;
-    //    }
-    //}
-
     public void OnPointerClick(PointerEventData pointerEventData)
     {
         if (IsSelected == false)
@@ -59,7 +45,6 @@ public class DisplayCard : MonoBehaviour, IPointerClickHandler
 
     public void SetDisplayCard(int cardId, Vector3 position)
     {
-        print("Set display card " + cardId);
         PlayerCard = CardDatabase.CardsList[cardId];
 
         CardId = PlayerCard.Id;
@@ -88,12 +73,9 @@ public class DisplayCard : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void PlayCard()
+    public void PlayCard(Vector3 position)
     {
-        float x = 1500f;
-        float y = 650f;
-        float z = 1f;
-        this.transform.position = new Vector3(x, y, z);
+        this.transform.position = position;
         this.transform.localScale = Vector3.one * 2f;
     }
 }

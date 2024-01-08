@@ -10,6 +10,18 @@ public class GameManager : MonoBehaviour
     public Deck PlayerDeck;
     public List<int> CardsOnHand = new List<int>();
     public List<GameObject> DisplayCardsOnHand;
+    public Dictionary<string, List<string>> PlayerSignals = new Dictionary<string, List<string>>
+    {
+        { "fire", new List<string>() },
+        { "water", new List<string>() },
+        { "wood", new List<string>() }
+    };
+    public Dictionary<string, List<string>> OpponentSignals = new Dictionary<string, List<string>>
+    {
+        { "fire", new List<string>() },
+        { "water", new List<string>() },
+        { "wood", new List<string>() }
+    };
 
     private void Start()
     {
@@ -56,6 +68,10 @@ public class GameManager : MonoBehaviour
             // Perform game end actions
             return;
         }
+
+        // Remove opponent's card
+        Vector3 opponentCardPosition = new Vector3(-1000, 650, 1);
+        GameObject.FindGameObjectWithTag("OpponentCard").GetComponent<DisplayCard>().SetDisplayCard(0, opponentCardPosition);
 
         // Deselect all player's on hand cards
         DeselectAllPlayerCards();
@@ -112,18 +128,26 @@ public class GameManager : MonoBehaviour
         if (IsPlayerDraw(playerCard, opponentCard))
         {
             // Show player drawed
-            print("player draw");
+            print("Players draw");
         }
         else if (IsPlayerWin(playerCard, opponentCard))
         {
-            // Show player won & add signal
-            print("player won ");
+            // Show player won
+            print("Player won");
+
+            // Add signal
+            PlayerSignals[playerCard.Element].Add(playerCard.Color);
         }
         else
         {
-            // Show opponent won & add signal
-            print("opponent won");
+            // Show opponent won
+            print("Opponent won");
+
+            // Add signal
+            OpponentSignals[opponentCard.Element].Add(opponentCard.Color);
         }
+        print("---------------------------------------------------------------");
+        PrintSignals();
         print("---------------------------------------------------------------");
 
         CountDownTimer.PauseTimer();
@@ -162,16 +186,21 @@ public class GameManager : MonoBehaviour
     private void RenderSelectedCards(GameObject card)
     {
         // Render player's card
-        card.GetComponent<DisplayCard>().PlayCard();
+        Vector3 playerPlayCardPosition = new Vector3 (1500, 650, 1);
+        card.GetComponent<DisplayCard>().PlayCard(playerPlayCardPosition);
 
         // Render opponent's card
-
+        print("Show opponent card");
+        //GameObject.FindGameObjectWithTag("OpponentCard").SetActive(true);
     }
 
     private Card GetOpponentSelectedCard(List<int> opponentDeck)
     {
         Card opponentCard = CardDatabase.CardsList[opponentDeck[0]];
         opponentDeck.RemoveAt(0);
+
+        Vector3 opponentCardPosition = new Vector3(420, 650, 1);
+        GameObject.FindGameObjectWithTag("OpponentCard").GetComponent<DisplayCard>().SetDisplayCard(opponentCard.Id, opponentCardPosition);
 
         return opponentCard;
     }
@@ -260,5 +289,30 @@ public class GameManager : MonoBehaviour
         {
             card.GetComponent<DisplayCard>().IsSelected = false;
         }
+    }
+
+    private void PrintSignals()
+    {
+        string playerSignals = "PlayerSignals: [";
+        foreach (var PlayerSignal in PlayerSignals)
+        {
+            foreach (var color in PlayerSignal.Value)
+            {
+                playerSignals += $"{PlayerSignal.Key}-{color}, ";
+            }
+        }
+        playerSignals += "]";
+        print(playerSignals);
+
+        string opponentSignals = "OpponentSignals: [";
+        foreach (var OpponentSignal in OpponentSignals)
+        {
+            foreach (var color in OpponentSignal.Value)
+            {
+                opponentSignals += $"{OpponentSignal.Key}-{color}, ";
+            }
+        }
+        opponentSignals += "]";
+        print(opponentSignals);
     }
 }
