@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SignalDatabase : MonoBehaviour
@@ -25,5 +26,18 @@ public class SignalDatabase : MonoBehaviour
         SignalsList.Add(new Signal(12,  "wood", "grey",   Resources.Load<Sprite>("Cards/Signal/wood_grey")));
         SignalsList.Add(new Signal(13,  "wood", "orange", Resources.Load<Sprite>("Cards/Signal/wood_orange")));
         SignalsList.Add(new Signal(14,  "wood", "yellow", Resources.Load<Sprite>("Cards/Signal/wood_yellow")));
+    }
+
+    public int FindSignal(string element, string color)
+    {
+        Signal foundSignal = SignalsList.FirstOrDefault(signal => signal.Element == element && signal.Color == color);
+        if (foundSignal != null)
+        {
+            return foundSignal.Id;
+        }
+        else
+        {
+            return -1; // Return -1 if the signal with given element and color is not found
+        }
     }
 }

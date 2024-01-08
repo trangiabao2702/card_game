@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class DisplaySignal : MonoBehaviour
 {
-    public List<Signal> DisplaySignals = new List<Signal>();
-    public int DisplayId;
+    //public List<Signal> DisplaySignals = new List<Signal>();
+    //public int DisplayId;
 
     public int SignalId;
     public string SignalElement;
@@ -15,19 +15,35 @@ public class DisplaySignal : MonoBehaviour
 
     public Image SignalImage;
 
-    void Start()
-    {
-        DisplaySignals.Clear();
-        DisplaySignals.Add(SignalDatabase.SignalsList[DisplayId]);
-    }
+    private Signal PlayerSignal;
 
-    void Update()
+    //void Start()
+    //{
+    //    DisplaySignals.Clear();
+    //    DisplaySignals.Add(SignalDatabase.SignalsList[DisplayId]);
+    //}
+
+    //void Update()
+    //{
+    //    SignalId = DisplaySignals[0].Id;
+    //    SignalElement = DisplaySignals[0].Element;
+    //    SignalColor = DisplaySignals[0].Color;
+    //    SignalSpriteImage = DisplaySignals[0].SpriteImage;
+
+    //    SignalImage.sprite = SignalSpriteImage;
+    //}
+
+    public void SetDisplaySignal(int signalId, Vector3 position)
     {
-        SignalId = DisplaySignals[0].Id;
-        SignalElement = DisplaySignals[0].Element;
-        SignalColor = DisplaySignals[0].Color;
-        SignalSpriteImage = DisplaySignals[0].SpriteImage;
+        PlayerSignal = SignalDatabase.SignalsList[signalId];
+
+        SignalId = PlayerSignal.Id;
+        SignalElement = PlayerSignal.Element;
+        SignalColor = PlayerSignal.Color;
+        SignalSpriteImage = PlayerSignal.SpriteImage;
 
         SignalImage.sprite = SignalSpriteImage;
+
+        this.transform.position = position;
     }
 }

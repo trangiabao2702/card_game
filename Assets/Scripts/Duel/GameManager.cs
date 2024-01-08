@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,8 +13,8 @@ public class GameManager : MonoBehaviour
     public List<GameObject> DisplayCardsOnHand;
     public Dictionary<string, List<string>> PlayerSignals = new Dictionary<string, List<string>>
     {
-        { "fire", new List<string>() },
-        { "water", new List<string>() },
+        { "fire", new List<string>{ "orange", "yellow" } },
+        { "water", new List<string>{ "green" } },
         { "wood", new List<string>() }
     };
     public Dictionary<string, List<string>> OpponentSignals = new Dictionary<string, List<string>>
@@ -78,7 +79,7 @@ public class GameManager : MonoBehaviour
 
         // Draw player's cards to hand
         DrawCardsToHand();
-
+        RenderSignals();
         //// Start count down
         //CountDownTimer.StartTimer(10.1f);
     }
@@ -148,6 +149,7 @@ public class GameManager : MonoBehaviour
         }
         print("---------------------------------------------------------------");
         PrintSignals();
+        RenderSignals();
         print("---------------------------------------------------------------");
 
         CountDownTimer.PauseTimer();
@@ -314,5 +316,65 @@ public class GameManager : MonoBehaviour
         }
         opponentSignals += "]";
         print(opponentSignals);
+    }
+
+    private void RenderSignals()
+    {
+        /*
+         * Maxium signals for each element is 5 because a player will win with 3 different signals
+         */
+
+        SignalDatabase signalDatabase = new SignalDatabase();
+
+        // Render player's signals
+        int indexSignal = 0;
+        GameObject[] currentPlayerSignals = GameObject.FindGameObjectsWithTag("PlayerSignal");
+        foreach (var element in PlayerSignals)
+        {
+            for (int indexElement = 0; indexElement < PlayerSignals[element.Key].Count; indexElement++)
+            {
+                string color = PlayerSignals[element.Key][indexElement];
+                int signalId = signalDatabase.FindSignal(element.Key, color);
+                Vector3 signalPosition = new Vector3(100f, 970f - indexElement * 10f, 0 - indexElement);
+
+                if (element.Key == "water")
+                {
+                    signalPosition.x += 110f;
+                }
+                else if (element.Key == "wood")
+                {
+                    signalPosition.x += 220f;
+                }
+                else { }
+                print("render signal " + signalId + " - " + element.Key + " - " + color + $" (100, {970 - indexElement * 10}, 0)");
+                currentPlayerSignals[indexSignal].GetComponent<DisplaySignal>().SetDisplaySignal(signalId, signalPosition);
+
+                indexSignal++;
+            }
+            //PlayerSignals[element.Key].ForEach((color) =>
+            //{
+            //    int indexElement = 0;
+            //    int signalId = signalDatabase.FindSignal(element.Key, color);
+            //    Vector3 signalPosition = new Vector3(100f, 970f - indexElement * 10f, 0);
+
+            //    if (element.Key == "water")
+            //    {
+            //        signalPosition.x += 110f;
+            //    }
+            //    else if (element.Key == "wood")
+            //    {
+            //        signalPosition.x += 220f;
+            //    }
+            //    else { }
+            //    print("render signal " + signalId + " - " + element.Key + " - " + color + $" (100, {970-indexElement*10}, 0)");
+            //    currentPlayerSignals[indexSignal].GetComponent<DisplaySignal>().SetDisplaySignal(signalId, signalPosition);
+
+            //    indexSignal++;
+            //    indexElement++;
+            //});
+        }
+
+        // Render opponent's signals
+        
     }
 }
