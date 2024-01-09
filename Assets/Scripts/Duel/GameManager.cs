@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -69,6 +70,7 @@ public class GameManager : MonoBehaviour
         if (CheckGameOverCondition())
         {
             // Perform game end actions
+            print("End game");
             return;
         }
 
@@ -78,6 +80,7 @@ public class GameManager : MonoBehaviour
 
         // Deselect all player's on hand cards
         DeselectAllPlayerCards();
+        AllowToSelectCards();
 
         // Draw player's cards to hand
         DrawCardsToHand();
@@ -155,7 +158,9 @@ public class GameManager : MonoBehaviour
         print("---------------------------------------------------------------");
 
         CountDownTimer.PauseTimer();
-        StartCoroutine(PauseForSeconds(10f));
+        PreventToSelectCards();
+        CardsOnHand.Remove(playerCard.Id);
+        StartCoroutine(PauseForSeconds(5f));
 
         CountDownTimer.StartTimer(10.1f);
     }
@@ -274,8 +279,62 @@ public class GameManager : MonoBehaviour
 
     private bool CheckGameOverCondition()
     {
-        // Implement your game end condition logic here
-        // Return true if the game should end, false otherwise
+        // Check if player has 3 different elements
+        bool allListsNotEmpty = true;
+
+        foreach (var item in PlayerSignals)
+        {
+            if (item.Value.Count == 0)
+            {
+                allListsNotEmpty = false;
+                break;
+            }
+        }
+
+        if (allListsNotEmpty)
+        {
+            print("Player win with three different elements");
+            return true;
+        }
+
+        // Check if player has 3 different colors in an element
+        foreach (var item in PlayerSignals)
+        {
+            if (item.Value.Distinct().Count() >= 3)
+            {
+                print($"Player win with three different colors of element {item.Key}");
+                return true;
+            }
+        }
+
+        // Check if opponent has 3 different elements
+        allListsNotEmpty = true;
+
+        foreach (var item in PlayerSignals)
+        {
+            if (item.Value.Count == 0)
+            {
+                allListsNotEmpty = false;
+                break;
+            }
+        }
+
+        if (allListsNotEmpty)
+        {
+            print("Opponent win with three different elements");
+            return true;
+        }
+
+        // Check if opponent has 3 different colors in an element
+        foreach (var item in OpponentSignals)
+        {
+            if (item.Value.Distinct().Count() >= 3)
+            {
+                print($"Player win with three different colors of element {item.Key}");
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -379,5 +438,21 @@ public class GameManager : MonoBehaviour
                 indexSignal++;
             }
         }
+    }
+
+    private void AllowToSelectCards()
+    {
+        DisplayCardsOnHand.ForEach((card) =>
+        {
+            card.GetComponent<DisplayCard>().AllowToSelectCard();
+        });
+    }
+
+    private void PreventToSelectCards()
+    {
+        DisplayCardsOnHand.ForEach((card) =>
+        {
+            card.GetComponent<DisplayCard>().PreventToSelectCard();
+        });
     }
 }

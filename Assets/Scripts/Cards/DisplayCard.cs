@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class DisplayCard : MonoBehaviour, IPointerClickHandler
 {
     private Card PlayerCard;
+    private bool CanSelectCard = true;
 
     public int CardId;
     public int CardPower;
@@ -34,7 +35,7 @@ public class DisplayCard : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData pointerEventData)
     {
-        if (IsSelected == false)
+        if (!IsSelected && CanSelectCard)
         {
             DeselectOldSelectedCard();
 
@@ -77,5 +78,15 @@ public class DisplayCard : MonoBehaviour, IPointerClickHandler
     {
         this.transform.position = position;
         this.transform.localScale = Vector3.one * 2f;
+    }
+
+    public void AllowToSelectCard()
+    {
+        CanSelectCard = true;
+    }
+
+    public void PreventToSelectCard()
+    {
+        CanSelectCard = false;
     }
 }

@@ -44,8 +44,8 @@ public class Deck : MonoBehaviour
         {
             int firstCard = PlayerDeck[0];
             PlayerDeck.RemoveAt(0);
-            //RemainCards = PlayerDeck.Count;
-            //uiText.text = RemainCards.ToString();
+            RemainCards = PlayerDeck.Count;
+            uiText.text = RemainCards.ToString();
 
             return firstCard;
         }
