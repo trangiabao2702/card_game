@@ -11,10 +11,12 @@ public class GameManager : MonoBehaviour
     public Deck PlayerDeck;
     public List<int> CardsOnHand = new List<int>();
     public List<GameObject> DisplayCardsOnHand;
+    public List<GameObject> DisplayPlayerSignals;
+    public List<GameObject> DisplayOpponentSignals;
     public Dictionary<string, List<string>> PlayerSignals = new Dictionary<string, List<string>>
     {
-        { "fire", new List<string>{ "orange", "yellow" } },
-        { "water", new List<string>{ "green" } },
+        { "fire", new List<string>() },
+        { "water", new List<string>() },
         { "wood", new List<string>() }
     };
     public Dictionary<string, List<string>> OpponentSignals = new Dictionary<string, List<string>>
@@ -328,14 +330,13 @@ public class GameManager : MonoBehaviour
 
         // Render player's signals
         int indexSignal = 0;
-        GameObject[] currentPlayerSignals = GameObject.FindGameObjectsWithTag("PlayerSignal");
         foreach (var element in PlayerSignals)
         {
             for (int indexElement = 0; indexElement < PlayerSignals[element.Key].Count; indexElement++)
             {
                 string color = PlayerSignals[element.Key][indexElement];
                 int signalId = signalDatabase.FindSignal(element.Key, color);
-                Vector3 signalPosition = new Vector3(100f, 970f - indexElement * 10f, 0 - indexElement);
+                Vector3 signalPosition = new Vector3(1600f, 970f - indexElement * 20f, 0 - indexElement);
 
                 if (element.Key == "water")
                 {
@@ -347,34 +348,36 @@ public class GameManager : MonoBehaviour
                 }
                 else { }
                 print("render signal " + signalId + " - " + element.Key + " - " + color + $" (100, {970 - indexElement * 10}, 0)");
-                currentPlayerSignals[indexSignal].GetComponent<DisplaySignal>().SetDisplaySignal(signalId, signalPosition);
+                DisplayPlayerSignals[indexSignal].GetComponent<DisplaySignal>().SetDisplaySignal(signalId, signalPosition);
 
                 indexSignal++;
             }
-            //PlayerSignals[element.Key].ForEach((color) =>
-            //{
-            //    int indexElement = 0;
-            //    int signalId = signalDatabase.FindSignal(element.Key, color);
-            //    Vector3 signalPosition = new Vector3(100f, 970f - indexElement * 10f, 0);
-
-            //    if (element.Key == "water")
-            //    {
-            //        signalPosition.x += 110f;
-            //    }
-            //    else if (element.Key == "wood")
-            //    {
-            //        signalPosition.x += 220f;
-            //    }
-            //    else { }
-            //    print("render signal " + signalId + " - " + element.Key + " - " + color + $" (100, {970-indexElement*10}, 0)");
-            //    currentPlayerSignals[indexSignal].GetComponent<DisplaySignal>().SetDisplaySignal(signalId, signalPosition);
-
-            //    indexSignal++;
-            //    indexElement++;
-            //});
         }
 
         // Render opponent's signals
-        
+        indexSignal = 0;
+        foreach (var element in OpponentSignals)
+        {
+            for (int indexElement = 0; indexElement < OpponentSignals[element.Key].Count; indexElement++)
+            {
+                string color = OpponentSignals[element.Key][indexElement];
+                int signalId = signalDatabase.FindSignal(element.Key, color);
+                Vector3 signalPosition = new Vector3(100f, 970f - indexElement * 20f, 0 - indexElement);
+
+                if (element.Key == "water")
+                {
+                    signalPosition.x += 110f;
+                }
+                else if (element.Key == "wood")
+                {
+                    signalPosition.x += 220f;
+                }
+                else { }
+                print("render signal " + signalId + " - " + element.Key + " - " + color + $" (100, {970 - indexElement * 10}, 0)");
+                DisplayOpponentSignals[indexSignal].GetComponent<DisplaySignal>().SetDisplaySignal(signalId, signalPosition);
+
+                indexSignal++;
+            }
+        }
     }
 }
