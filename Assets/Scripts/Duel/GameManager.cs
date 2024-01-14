@@ -26,10 +26,16 @@ public class GameManager : MonoBehaviour
         { "water", new List<string>() },
         { "wood", new List<string>() }
     };
+    public int OpponentLevel = 1;
+    public Deck OpponentDeck;
+    public List<int> OpponentCardsOnHand = new List<int>();
 
     private void Start()
     {
         PlayerDeck.InitializePlayerDeck(GetPlayerDeck());
+        print(PlayerDeck);
+        OpponentDeck.InitializePlayerDeck(GetOpponentDeck());
+        print(OpponentDeck);
         StartTurn();
     }
 
@@ -49,31 +55,24 @@ public class GameManager : MonoBehaviour
     
     List<int> GetOpponentDeck()
     {
-        List<int> opponentDeck =  new List<int> { 0, 1, 2, 3, 4, 20, 21, 22, 23, 24, 40, 41, 42, 43, 44 };
-
-        int n = opponentDeck.Count;
-        while (n > 1)
-        {
-            n--;
-            int k = Random.Range(0, n + 1);
-            int value = opponentDeck[k];
-            opponentDeck[k] = opponentDeck[n];
-            opponentDeck[n] = value;
+        switch (OpponentLevel) {
+            case 1:
+                return new List<int> { 0, 1, 2, 3, 4, 20, 21, 22, 23, 24, 40, 41, 42, 43, 44 };
+            case 2:
+                return new List<int> { 1, 2, 3, 4, 5, 21, 22, 23, 24, 25, 41, 42, 43, 44, 45 };
+            case 3:
+                return new List<int> { 3, 4, 5, 6, 7, 23, 24, 25, 26, 27, 43, 44, 45, 46, 47 };
+            case 4:
+                return new List<int> { 4, 5, 6, 7, 8, 24, 25, 26, 27, 28, 44, 45, 46, 47, 48 };
+            case 5:
+                return new List<int> { 5, 6, 7, 8, 9, 25, 26, 27, 28, 29, 45, 46, 47, 48, 49 };
+            default:
+                return new List<int> { 5, 6, 7, 8, 9, 25, 26, 27, 28, 29, 45, 46, 47, 48, 49 };
         }
-
-        return opponentDeck;
     }
 
     private void StartTurn()
     {
-        // Check game end conditions
-        if (CheckGameOverCondition())
-        {
-            // Perform game end actions
-            print("End game");
-            return;
-        }
-
         // Remove opponent's card
         Vector3 opponentCardPosition = new Vector3(-1000, 650, 1);
         GameObject.FindGameObjectWithTag("OpponentCard").GetComponent<DisplayCard>().SetDisplayCard(0, opponentCardPosition);
@@ -103,6 +102,17 @@ public class GameManager : MonoBehaviour
         }
 
         RenderCardsOnHand();
+
+        while (OpponentCardsOnHand.Count < 5)
+        {
+            int drewCardId = OpponentDeck.Draw();
+            if (drewCardId == -1)
+            {
+                break;
+            }
+
+            OpponentCardsOnHand.Add(drewCardId);
+        }
     }
 
     private void RenderCardsOnHand()
@@ -125,7 +135,7 @@ public class GameManager : MonoBehaviour
         Card playerCard = GetPlayerSelectedCard();
 
         // Get opponent's selected card
-        Card opponentCard = GetOpponentSelectedCard(GetOpponentDeck());
+        Card opponentCard = GetOpponentSelectedCard();
 
         // Compare cards and show the winner
         print("---------------------------------------------------------------");
@@ -154,7 +164,6 @@ public class GameManager : MonoBehaviour
         }
         print("---------------------------------------------------------------");
         PrintSignals();
-        RenderSignals();
         print("---------------------------------------------------------------");
 
         CountDownTimer.PauseTimer();
@@ -203,10 +212,81 @@ public class GameManager : MonoBehaviour
         //GameObject.FindGameObjectWithTag("OpponentCard").SetActive(true);
     }
 
-    private Card GetOpponentSelectedCard(List<int> opponentDeck)
+    private Card GetOpponentSelectedCard()
     {
-        Card opponentCard = CardDatabase.CardsList[opponentDeck[0]];
-        opponentDeck.RemoveAt(0);
+        print("Opponent Lv: " + OpponentLevel);
+        switch (OpponentLevel)
+        {
+            case 1:
+                // min power card
+                OpponentCardsOnHand.Sort((a, b) => CardDatabase.CardsList[a].Power.CompareTo(CardDatabase.CardsList[b].Power));
+
+                break;
+            case 2:
+                // max power card
+                OpponentCardsOnHand.Sort((a, b) => CardDatabase.CardsList[a].Power.CompareTo(CardDatabase.CardsList[b].Power));
+                OpponentCardsOnHand.Reverse();
+
+                break;
+            case 3:
+                // order the priority of signals
+                List<string> prioritySignals = OpponentSignals.OrderBy(kv => kv.Value.Count).Select(kv => kv.Key).ToList();
+
+                // add missing signals
+                prioritySignals = AddMissingSignals(prioritySignals);
+
+                // order the cards on hand by priority signals and power desc
+                OpponentCardsOnHand = OrderOpponentCardsByPrioritySignal(prioritySignals);
+
+                break;
+            case 4:
+                // check the opponent's need signal
+                List<string> opponentNeedSignals = GetOpponentNeedSignals();
+
+                // order the priority of signals by power
+                if (opponentNeedSignals.Count == 2)
+                {
+                    if (MaxPowerOpponentOnHandCardsOfElement(opponentNeedSignals[0]) < MaxPowerOpponentOnHandCardsOfElement(opponentNeedSignals[1]))
+                    {
+                        string tempSignal = opponentNeedSignals[0];
+                        opponentNeedSignals[0] = opponentNeedSignals[1];
+                        opponentNeedSignals[1] = tempSignal;
+                    }
+                }
+
+                // add the missing signals
+                opponentNeedSignals = AddMissingSignals(opponentNeedSignals);
+
+                // order the cards on hand by priority signals and power desc
+                OpponentCardsOnHand = OrderOpponentCardsByPrioritySignal(opponentNeedSignals);
+
+                break;
+            case 5:
+                // check the player's need signal
+                List<string> playerNeedSignals = GetPlayerNeedSignals();
+
+                // order the priority of signals by power
+                if (playerNeedSignals.Count == 2)
+                {
+                    if (MaxPowerOpponentOnHandCardsOfElement(playerNeedSignals[0]) < MaxPowerOpponentOnHandCardsOfElement(playerNeedSignals[1]))
+                    {
+                        string tempSignal = playerNeedSignals[0];
+                        playerNeedSignals[0] = playerNeedSignals[1];
+                        playerNeedSignals[1] = tempSignal;
+                    }
+                }
+
+                // add the missing signals
+                playerNeedSignals = AddMissingSignals(playerNeedSignals);
+
+                // order the cards on hand by priority signals and power desc
+                OpponentCardsOnHand = OrderOpponentCardsByPrioritySignal(playerNeedSignals);
+
+                break;
+        }
+
+        Card opponentCard = CardDatabase.CardsList[OpponentCardsOnHand[0]];
+        OpponentCardsOnHand.RemoveAt(0);
 
         Vector3 opponentCardPosition = new Vector3(420, 650, 1);
         GameObject.FindGameObjectWithTag("OpponentCard").GetComponent<DisplayCard>().SetDisplayCard(opponentCard.Id, opponentCardPosition);
@@ -342,7 +422,18 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(duration);
         CountDownTimer.ResumeTimer();
-        StartTurn();
+        RenderSignals();
+
+        // Check game end conditions
+        if (CheckGameOverCondition())
+        {
+            // Perform game end actions
+            print("End game");
+        }
+        else
+        {
+            StartTurn();
+        }
     }
 
     private void DeselectAllPlayerCards()
@@ -454,5 +545,132 @@ public class GameManager : MonoBehaviour
         {
             card.GetComponent<DisplayCard>().PreventToSelectCard();
         });
+    }
+
+    private List<int> OrderOpponentCardsByPrioritySignal(List<string> prioritySignals)
+    {
+        // order the cards on hand by ordered signals and power desc
+        OpponentCardsOnHand.Sort((a, b) => b.CompareTo(a));
+        List<int> orderedCards = new List<int>();
+        for (int i = 0; i < prioritySignals.Count; i++)
+        {
+            for (int j = 0; j < OpponentCardsOnHand.Count; j++)
+            {
+                if (CardDatabase.CardsList[OpponentCardsOnHand[j]].Element == prioritySignals[i])
+                {
+                    orderedCards.Add(OpponentCardsOnHand[j]);
+                }
+            }
+        }
+
+        return orderedCards;
+    }
+
+    private List<string> GetPlayerNeedSignals()
+    {
+        List<string> signals = new List<string>();
+
+        if (PlayerSignals["fire"].Count > 0 && PlayerSignals["water"].Count > 0)
+        {
+            signals.Add("wood");
+        }
+        else if (PlayerSignals["water"].Count > 0 && PlayerSignals["wood"].Count > 0)
+        {
+            signals.Add("fire");
+        }
+        else if (PlayerSignals["wood"].Count > 0 && PlayerSignals["fire"].Count > 0)
+        {
+            signals.Add("water");
+        }
+        else { }
+        
+        if (PlayerSignals["fire"].Count > 1)
+        {
+            signals.Add("fire");
+        }
+        else if (PlayerSignals["water"].Count > 1)
+        {
+            signals.Add("water");
+        }
+        else if (PlayerSignals["wood"].Count > 1)
+        {
+            signals.Add("wood");
+        }
+        else { }
+
+        return signals;
+    }
+
+    private List<string> GetOpponentNeedSignals()
+    {
+        List<string> signals = new List<string>();
+
+        if (OpponentSignals["fire"].Count > 0 && OpponentSignals["water"].Count > 0)
+        {
+            signals.Add("wood");
+        }
+        else if (OpponentSignals["water"].Count > 0 && OpponentSignals["wood"].Count > 0)
+        {
+            signals.Add("fire");
+        }
+        else if (OpponentSignals["wood"].Count > 0 && OpponentSignals["fire"].Count > 0)
+        {
+            signals.Add("water");
+        }
+        else { }
+
+        if (OpponentSignals["fire"].Count > 1)
+        {
+            signals.Add("fire");
+        }
+        else if (OpponentSignals["water"].Count > 1)
+        {
+            signals.Add("water");
+        }
+        else if (OpponentSignals["wood"].Count > 1)
+        {
+            signals.Add("wood");
+        }
+        else { }
+
+        return signals;
+    }
+
+    private int MaxPowerOpponentOnHandCardsOfElement(string element)
+    {
+        int maxPower = 0;
+        for (int i = 0; i < OpponentCardsOnHand.Count; i++)
+        {
+            if (CardDatabase.CardsList[OpponentCardsOnHand[i]].Power > maxPower)
+            {
+                maxPower = CardDatabase.CardsList[OpponentCardsOnHand[i]].Power;
+            }
+        }
+
+        return maxPower;
+    }
+
+    private List<string> AddMissingSignals(List<string> signals)
+    {
+        List<string> fullSignals = new List<string>();
+        for (int i = 0;i < signals.Count;i++)
+        {
+            fullSignals.Add(signals[i]);
+        }
+
+        if (!fullSignals.Contains("fire"))
+        {
+            fullSignals.Add("fire");
+        }
+        if (!fullSignals.Contains("water"))
+        {
+            fullSignals.Add("water");
+        }
+        if (!fullSignals.Contains("wood"))
+        {
+            fullSignals.Add("wood");
+        }
+
+        return fullSignals;
     }
 }

@@ -17,6 +17,12 @@ public class DisplayCard : MonoBehaviour, IPointerClickHandler
     public bool IsSelected = false;
 
     public Image CardImage;
+    Audio AudioManager;
+
+    private void Awake()
+    {
+        AudioManager = GameObject.FindGameObjectWithTag("BattleAudio").GetComponent<Audio>();
+    }
 
     public DisplayCard(int cardId, Vector3 position)
     {
@@ -42,6 +48,8 @@ public class DisplayCard : MonoBehaviour, IPointerClickHandler
             IsSelected = true;
             this.transform.position += Vector3.up * 20f;
         }
+
+        AudioManager.PlaySFX(AudioManager.SelectCard);
     }
 
     public void SetDisplayCard(int cardId, Vector3 position)

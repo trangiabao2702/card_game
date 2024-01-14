@@ -9,10 +9,15 @@ public class Deck : MonoBehaviour
     public List<int> PlayerDeck = new List<int>();
 
     [SerializeField] private TextMeshProUGUI uiText;
+    Audio AudioManager;
 
     private void Update()
     {
         uiText.text = "" + RemainCards;
+    }
+    private void Awake()
+    {
+        AudioManager = GameObject.FindGameObjectWithTag("BattleAudio").GetComponent<Audio>();
     }
 
     public void InitializePlayerDeck(List<int> cardIds)
@@ -42,6 +47,8 @@ public class Deck : MonoBehaviour
     {
         if (PlayerDeck.Count > 0)
         {
+            AudioManager.PlaySFX(AudioManager.DrawCard);
+
             int firstCard = PlayerDeck[0];
             PlayerDeck.RemoveAt(0);
             RemainCards = PlayerDeck.Count;
