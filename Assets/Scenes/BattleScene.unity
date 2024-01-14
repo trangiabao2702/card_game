@@ -7594,7 +7594,7 @@ MonoBehaviour:
   - {fileID: 1012459182}
   - {fileID: 694477196}
   - {fileID: 505308955}
-  OpponentLevel: 1
+  OpponentLevel: 2
   OpponentDeck: {fileID: 1678985933}
   OpponentCardsOnHand: 
 --- !u!4 &1870529737
