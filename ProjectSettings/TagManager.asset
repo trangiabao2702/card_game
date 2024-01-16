@@ -8,6 +8,8 @@ TagManager:
   - OpponentCard
   - PlayerSignal
   - OpponentSignal
+  - BattleAudio
+  - OpponentFaceDownCard
   - Mob
   layers:
   - Default
