@@ -10,7 +10,6 @@ public class MainCharacter : MonoBehaviour
     public float speed = 5f; // Tốc độ di chuyển
     private Rigidbody2D rb;
     public Animator animator;
-    private CardList cards = new CardList();
 
     //public static Singleton Instance { get; private set; }
     // Start is called before the first frame update

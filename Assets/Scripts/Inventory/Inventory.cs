@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class DetailCard
 {
@@ -13,23 +15,6 @@ public class DetailCard
         this.sprite = spriteImage;
         this.inDeck = inDeck;
         this.playerGet = playerGet;
-    }
-}
-
-class CardList
-{
-    public List<DetailCard> cards = new List<DetailCard>();
-
-    public CardList()
-    {
-        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Fire/fire_01"), true, true));
-        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Fire/fire_02"), true, true));
-        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Fire/water_01"), true, true));
-        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Fire/water_02"), true, true));
-        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Fire/wood_01"), true, true));
-        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Fire/wood_02"), true, true));
-        //string randomCard = cardSprites[new Random().Next(6, 16)];
-        //cards.Add(new DetailCard(Resources.Load<Sprite>(randomCard), true, true));
     }
 }
 
@@ -57,35 +42,82 @@ public class Inventory : MonoBehaviour
         "Cards/Fire/fire_19","Cards/Water/water_19","Cards/Wood/wood_19",
         "Cards/Fire/fire_20","Cards/Water/water_20","Cards/Wood/wood_20",
     };
-    [SerializeField] GameObject inventoryCardPrefab;
-    [SerializeField] GameObject ItemsPanel;
-    CardList cards = new CardList();
+    [SerializeField] InventoryItems inventoryCardPrefab;
+    [SerializeField] RectTransform ItemsPanel;
 
-    //List<InventoryItems> listOfUIItems = new List<InventoryItems>();
-    //// Start is called before the first frame update
-    //void Start()
-    //{
-        
-    //}
+    public List<DetailCard> cards = new List<DetailCard>();
 
-    //// Update is called once per frame
-    //void Update()
-    //{
-        
-    //}
+    public List<InventoryItems> listOfUIItems = new List<InventoryItems>();
+    // Start is called before the first frame update
+    void Start()
+    {
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Fire/fire_01"), true, true));
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Fire/fire_02"), true, true));
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Water/water_01"), true, true));
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Water/water_02"), true, true));
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Wood/wood_01"), true, true));
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Wood/wood_02"), true, true));
+        //string randomCard = cardSprites[new Random().Next(6, 16)];
+        //cards.Add(new DetailCard(Resources.Load<Sprite>(randomCard), true, true));
+    }
 
-    //public void InitInventory()
-    //{
-    //    for(int i = 0; i < 60; i++)
-    //    {
-    //        InventoryItems newCard = Instantiate(inventoryCardPrefab, Vector3.zero, Quaternion.identity);
-    //        newCard.transform.SetParent(ItemsPanel);
-    //        listOfUIItems.Add(newCard);
-    //    }
-    //}
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I)) {
+            Debug.Log("Press I");
+        }
+    }
 
-    //public void setActive()
-    //{
-    //    this.gameObject.SetActive(!gameObject.active);
-    //}
+    public void InitInventory()
+    {
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Fire/fire_01"), true, true));
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Fire/fire_02"), true, true));
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Water/water_01"), true, true));
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Water/water_02"), true, true));
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Wood/wood_01"), true, true));
+        cards.Add(new DetailCard(Resources.Load<Sprite>("Cards/Wood/wood_02"), true, true));
+        for (int i = 0; i < 60; i++)
+        {
+            InventoryItems newCard = Instantiate(inventoryCardPrefab, Vector3.zero, Quaternion.identity);
+            if (i < cards.Count)
+            {
+                newCard.ChangeSprite(cards[i].sprite);
+            }
+            newCard.transform.SetParent(ItemsPanel);
+            listOfUIItems.Add(newCard);
+        }
+    }
+
+    public void LoadInventory()
+    {
+        while (ItemsPanel.childCount > 0)
+        {
+            DestroyImmediate(ItemsPanel.GetChild(0).gameObject);
+        }
+        listOfUIItems.Clear();
+        Debug.Log("delete");
+        Debug.Log(ItemsPanel);
+        Debug.Log(listOfUIItems);
+        Debug.Log(cards);
+        for (int i = 0; i < 60; i++)
+        {
+            InventoryItems newCard = Instantiate(inventoryCardPrefab, Vector3.zero, Quaternion.identity);
+            if (i < cards.Count)
+            {
+                newCard.ChangeSprite(cards[i].sprite);
+            }
+            newCard.transform.SetParent(ItemsPanel);
+            listOfUIItems.Add(newCard);
+        }
+    }
+
+    public void Open()
+    {
+        gameObject.SetActive(true);
+    }
+    public void Close()
+    {
+        gameObject.SetActive(false);
+    }
 }
