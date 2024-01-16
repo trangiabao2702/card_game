@@ -9,6 +9,7 @@ TagManager:
   - PlayerSignal
   - OpponentSignal
   - BattleAudio
+  - OpponentFaceDownCard
   layers:
   - Default
   - TransparentFX

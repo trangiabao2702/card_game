@@ -688,7 +688,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9d5d6d2efa5dade47b3c6e648dafaf7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c06223ceb71e97f4d854b125f5efa865, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1668,7 +1668,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.81568635, g: 0.54509807, b: 0.32941177, a: 1}
+  m_Color: {r: 0.43921572, g: 0.4431373, b: 0.43921572, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7594,7 +7594,7 @@ MonoBehaviour:
   - {fileID: 1012459182}
   - {fileID: 694477196}
   - {fileID: 505308955}
-  OpponentLevel: 2
+  OpponentLevel: 5
   OpponentDeck: {fileID: 1678985933}
   OpponentCardsOnHand: 
 --- !u!4 &1870529737
@@ -7740,7 +7740,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.79622644, g: 0.67494535, b: 0.5753862, a: 1}
+  m_Color: {r: 0.63529414, g: 0.6392157, b: 0.63529414, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

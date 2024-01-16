@@ -113,6 +113,8 @@ public class GameManager : MonoBehaviour
 
             OpponentCardsOnHand.Add(drewCardId);
         }
+
+        GameObject.FindGameObjectWithTag("OpponentFaceDownCard").transform.position = new Vector3(94, 100, 0);
     }
 
     private void RenderCardsOnHand()
@@ -290,6 +292,9 @@ public class GameManager : MonoBehaviour
 
         Vector3 opponentCardPosition = new Vector3(420, 650, 1);
         GameObject.FindGameObjectWithTag("OpponentCard").GetComponent<DisplayCard>().SetDisplayCard(opponentCard.Id, opponentCardPosition);
+
+        // Random disable a face down card
+        GameObject.FindGameObjectWithTag("OpponentFaceDownCard").transform.position = new Vector3(-1000, -1000, 0);
 
         return opponentCard;
     }
