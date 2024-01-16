@@ -1,13 +1,27 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class CharacterScript : MonoBehaviour
+public class MainCharacter : MonoBehaviour
 {
     public float speed = 5f; // Tốc độ di chuyển
     private Rigidbody2D rb;
     public Animator animator;
+    private CardList cards = new CardList();
+
+    //public static Singleton Instance { get; private set; }
     // Start is called before the first frame update
+    public int playerRank = 0;
+
+    //void Awake()
+    //{
+    //    // Save a Reference to the component as our singleton instance
+    //    Instance = this;
+    //}
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -37,9 +51,19 @@ public class CharacterScript : MonoBehaviour
         isMoving = false;
     }
 
-    void MoveToZero()
+    void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.tag == "Mob")
+        {
+            Debug.Log("colision mob");
+            SceneManager.LoadScene("BattleScene");
+            Debug.Log("Move to battle scene");
+        }
+    }
 
+    public int getPlayerRank()
+    {
+        return playerRank;
     }
 
 

@@ -20,7 +20,7 @@ public class CameraScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (target.transform.position.x < 0)
+        if (target.transform.position.x < 0 || target.transform.position.x > 55)
         {
             cameraFollowX = false;
         } else
@@ -28,7 +28,7 @@ public class CameraScript : MonoBehaviour
             cameraFollowX = true; 
         }
 
-        if (target.transform.position.y > 4.5 || target.transform.position.y < -3.5)
+        if (target.transform.position.y > 4.5 || target.transform.position.y < -3)
         {
             cameraFollowY = false;
         }

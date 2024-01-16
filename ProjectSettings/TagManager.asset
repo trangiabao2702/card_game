@@ -8,6 +8,7 @@ TagManager:
   - OpponentCard
   - PlayerSignal
   - OpponentSignal
+  - Mob
   layers:
   - Default
   - TransparentFX
