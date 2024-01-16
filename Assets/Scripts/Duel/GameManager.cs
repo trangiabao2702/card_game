@@ -49,8 +49,8 @@ public class GameManager : MonoBehaviour
 
     List<int> GetPlayerDeck()
     {
-        // TODO: get the exact deck of player
         return new List<int> { 0, 1, 2, 3, 4, 20, 21, 22, 23, 24, 40, 41, 42, 43, 44 };
+
     }
     
     List<int> GetOpponentDeck()
