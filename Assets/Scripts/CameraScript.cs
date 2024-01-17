@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CameraScript : MonoBehaviour
 {
@@ -37,6 +38,10 @@ public class CameraScript : MonoBehaviour
             cameraFollowY = true;
         }
 
+        if (Input.GetKeyDown("escape"))
+        {
+            SceneManager.LoadScene("MenuScene");
+        }
     }
 
     //private void FixedUpdate()

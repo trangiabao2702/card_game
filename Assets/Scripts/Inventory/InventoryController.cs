@@ -5,6 +5,19 @@ using UnityEngine;
 public class InventoryController : MonoBehaviour
 {
     [SerializeField] Inventory inventory;
+    [SerializeField] DetailItem detail;
+    //public static InventoryController instance {  get; private set; }
+    //private void Awake()
+    //{
+    //    if (instance == null && instance != this)
+    //    {
+    //        Destroy(this);
+    //    }
+    //    else
+    //    {
+    //        instance = this; 
+    //    }
+    //}
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +43,10 @@ public class InventoryController : MonoBehaviour
             {
                 inventory.Close();
             }
+        }
+        if (Input.GetKeyDown("escape"))
+        {
+            Application.Quit();
         }
     }
 }

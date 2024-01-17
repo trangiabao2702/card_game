@@ -57,6 +57,6 @@ public class arena : MonoBehaviour
     private void OnMouseDown()
     {
         Debug.Log("clicked");
-        OpenConfirmModels("wtf");
+        OpenConfirmModels("");
     }
 }

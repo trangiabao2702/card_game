@@ -73,6 +73,10 @@ public class MainCharacter : MonoBehaviour
         {
             MovePlayer();
         }
+        if (Input.GetKeyDown("escape"))
+        {
+            SceneManager.LoadScene("MainScene");
+        }
     }
 
     bool facingRight = false;
