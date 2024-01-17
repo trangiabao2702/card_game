@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour
@@ -29,13 +30,14 @@ public class GameManager : MonoBehaviour
     public int OpponentLevel = 1;
     public Deck OpponentDeck;
     public List<int> OpponentCardsOnHand = new List<int>();
+    public GameObject Annoucement;
 
     private void Start()
     {
         PlayerDeck.InitializePlayerDeck(GetPlayerDeck());
-        print(PlayerDeck);
+        //print(PlayerDeck);
         OpponentDeck.InitializePlayerDeck(GetOpponentDeck());
-        print(OpponentDeck);
+        //print(OpponentDeck);
         StartTurn();
     }
 
@@ -140,9 +142,9 @@ public class GameManager : MonoBehaviour
         Card opponentCard = GetOpponentSelectedCard();
 
         // Compare cards and show the winner
-        print("---------------------------------------------------------------");
-        print("Player: " + playerCard.Power + " - " + playerCard.Element);
-        print("Opponent: " + opponentCard.Power + " - " + opponentCard.Element);
+        //print("---------------------------------------------------------------");
+        //print("Player: " + playerCard.Power + " - " + playerCard.Element);
+        //print("Opponent: " + opponentCard.Power + " - " + opponentCard.Element);
         if (IsPlayerDraw(playerCard, opponentCard))
         {
             // Show player drawed
@@ -164,9 +166,9 @@ public class GameManager : MonoBehaviour
             // Add signal
             OpponentSignals[opponentCard.Element].Add(opponentCard.Color);
         }
-        print("---------------------------------------------------------------");
-        PrintSignals();
-        print("---------------------------------------------------------------");
+        //print("---------------------------------------------------------------");
+        //PrintSignals();
+        //print("---------------------------------------------------------------");
 
         CountDownTimer.PauseTimer();
         PreventToSelectCards();
@@ -210,7 +212,7 @@ public class GameManager : MonoBehaviour
         card.GetComponent<DisplayCard>().PlayCard(playerPlayCardPosition);
 
         // Render opponent's card
-        print("Show opponent card");
+        //print("Show opponent card");
         //GameObject.FindGameObjectWithTag("OpponentCard").SetActive(true);
     }
 
@@ -362,7 +364,7 @@ public class GameManager : MonoBehaviour
         return 2;
     }
 
-    private bool CheckGameOverCondition()
+    private int CheckGameOverCondition()
     {
         // Check if player has 3 different elements
         bool allListsNotEmpty = true;
@@ -379,7 +381,7 @@ public class GameManager : MonoBehaviour
         if (allListsNotEmpty)
         {
             print("Player win with three different elements");
-            return true;
+            return 1;
         }
 
         // Check if player has 3 different colors in an element
@@ -388,14 +390,14 @@ public class GameManager : MonoBehaviour
             if (item.Value.Distinct().Count() >= 3)
             {
                 print($"Player win with three different colors of element {item.Key}");
-                return true;
+                return 1;
             }
         }
 
         // Check if opponent has 3 different elements
         allListsNotEmpty = true;
 
-        foreach (var item in PlayerSignals)
+        foreach (var item in OpponentSignals)
         {
             if (item.Value.Count == 0)
             {
@@ -407,7 +409,7 @@ public class GameManager : MonoBehaviour
         if (allListsNotEmpty)
         {
             print("Opponent win with three different elements");
-            return true;
+            return 2;
         }
 
         // Check if opponent has 3 different colors in an element
@@ -415,12 +417,12 @@ public class GameManager : MonoBehaviour
         {
             if (item.Value.Distinct().Count() >= 3)
             {
-                print($"Player win with three different colors of element {item.Key}");
-                return true;
+                print($"Opponent win with three different colors of element {item.Key}");
+                return 2;
             }
         }
 
-        return false;
+        return 0;
     }
 
     private IEnumerator PauseForSeconds(float duration)
@@ -430,15 +432,37 @@ public class GameManager : MonoBehaviour
         RenderSignals();
 
         // Check game end conditions
-        if (CheckGameOverCondition())
+        int isPlayerWin = CheckGameOverCondition();
+        if (isPlayerWin != 0)
         {
-            // Perform game end actions
-            print("End game");
+            Annoucement.SetActive(true);
+
+            if (isPlayerWin == 1)
+            {
+                Annoucement.transform.Find("Victory").gameObject.SetActive(true);
+                Annoucement.transform.Find("Victory").gameObject.GetComponent<Animator>().enabled = true;
+                print("Player Win");
+            }
+            else
+            {
+                Annoucement.transform.Find("Defeat").gameObject.SetActive(true);
+                Annoucement.transform.Find("Defeat").gameObject.GetComponent<Animator>().enabled = true;
+                print("Player lose");
+            }
+
+            StartCoroutine(ExitScene());
+            CountDownTimer.PauseTimer();
         }
         else
         {
             StartTurn();
         }
+    }
+
+    private IEnumerator ExitScene()
+    {
+        yield return new WaitForSeconds(3f);
+        SceneManager.LoadScene("ArenaScene");
     }
 
     private void DeselectAllPlayerCards()
@@ -502,7 +526,7 @@ public class GameManager : MonoBehaviour
                     signalPosition.x += 220f;
                 }
                 else { }
-                print("render signal " + signalId + " - " + element.Key + " - " + color + $" (100, {970 - indexElement * 10}, 0)");
+                //print("render signal " + signalId + " - " + element.Key + " - " + color + $" (100, {970 - indexElement * 10}, 0)");
                 DisplayPlayerSignals[indexSignal].GetComponent<DisplaySignal>().SetDisplaySignal(signalId, signalPosition);
 
                 indexSignal++;
@@ -528,7 +552,7 @@ public class GameManager : MonoBehaviour
                     signalPosition.x += 220f;
                 }
                 else { }
-                print("render signal " + signalId + " - " + element.Key + " - " + color + $" (100, {970 - indexElement * 10}, 0)");
+                //print("render signal " + signalId + " - " + element.Key + " - " + color + $" (100, {970 - indexElement * 10}, 0)");
                 DisplayOpponentSignals[indexSignal].GetComponent<DisplaySignal>().SetDisplaySignal(signalId, signalPosition);
 
                 indexSignal++;
